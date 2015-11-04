@@ -1,0 +1,38 @@
+{
+  "name": "exfat",
+  "version": "1.0.0",
+  "description": "ExFAT file system driver",
+  "license": "MIT",
+  "keywords": [
+    "exfat",
+    "fat",
+    "driver",
+    "file",
+    "system",
+    "fs",
+    "volume",
+    "mount"
+  ],
+  "main": "lib/exfat",
+  "author": "Jonas Hermsmeier <jhermsmeier@gmail.com> (https://jhermsmeier.de)",
+  "dependencies": {},
+  "devDependencies": {
+    "matcha": "~0.6.0",
+    "mocha": "~2.3.3"
+  },
+  "scripts": {
+    "bench": "matcha",
+    "test": "mocha"
+  },
+  "homepage": "https://github.com/jhermsmeier/node-exfat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jhermsmeier/node-exfat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jhermsmeier/node-exfat/issues"
+  },
+  "directories": {
+    "test": "test"
+  }
+}

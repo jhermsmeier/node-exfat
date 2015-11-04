@@ -1,0 +1,1 @@
+var ExFAT = require( '..' )
