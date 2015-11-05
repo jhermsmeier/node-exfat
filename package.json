@@ -15,8 +15,13 @@
   ],
   "main": "lib/exfat",
   "author": "Jonas Hermsmeier <jhermsmeier@gmail.com> (https://jhermsmeier.de)",
-  "dependencies": {},
+  "dependencies": {
+    "bloodline": "~1.0.0",
+    "node-int64": "~0.4.0"
+  },
   "devDependencies": {
+    "blockdevice": "~0.5.1",
+    "disk": "~0.4.0",
     "matcha": "~0.6.0",
     "mocha": "~2.3.3"
   },
