@@ -27,7 +27,7 @@
   },
   "scripts": {
     "bench": "matcha",
-    "test": "mocha"
+    "test": "mocha --ui tdd"
   },
   "homepage": "https://github.com/jhermsmeier/node-exfat",
   "repository": {
