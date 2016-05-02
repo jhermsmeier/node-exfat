@@ -28,7 +28,12 @@ suite( 'ExFAT', function() {
   
   suiteSetup( 'Open Disk', function( done ) {
     disk = new Disk( device )
-    disk.open( done )
+    disk.open( function( error ) {
+      if( error ) console.log( 'ERROR', error.message )
+      // log( inspect( disk ) )
+      // log( '' )
+      done()
+    })
   })
   
   test( 'Instance ExFAT Volume', function( done ) {
@@ -37,6 +42,7 @@ suite( 'ExFAT', function() {
     log( '' )
     
     var part = disk.mbr.partitions[0]
+    
     partition = device.partition({
       firstLBA: part.firstLBA,
       lastLBA: part.firstLBA + part.sectors
@@ -52,9 +58,8 @@ suite( 'ExFAT', function() {
     
   })
   
-  teardown( 'Close Disk', function( done ) {
+  suiteTeardown( 'Close Disk', function( done ) {
     disk.close( done )
   })
   
 })
-
