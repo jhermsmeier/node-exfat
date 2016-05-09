@@ -7,7 +7,7 @@ var log = console.log.bind( console )
 var inspect = function( value ) {
   return require( 'util' ).inspect( value, {
     colors: true,
-    // depth: null,
+    depth: null,
   })
 }
 
