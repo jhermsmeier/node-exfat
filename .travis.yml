@@ -1,12 +1,10 @@
 language: node_js
+sudo: false
 node_js:
+  - stable
   - "5"
   - "4"
+script: npm test
 branches:
   only:
     - master
-sudo: false
-script: npm test
-matrix:
-  allow_failures:
-    - node_js: "5"
