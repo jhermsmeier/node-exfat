@@ -20,7 +20,6 @@ suite( 'ExFAT', function() {
   
   suiteSetup( 'Create BlockDevice', function() {
     device = new BlockDevice({
-      // path: BlockDevice.getPath( 2 ),
       path: __dirname + '/data/usb-thumb-exfat.bin',
       mode: 'r',
       blockSize: 512,
@@ -32,7 +31,7 @@ suite( 'ExFAT', function() {
     disk.open( done )
   })
   
-  test( 'Instance ExFAT Volume', function() {
+  test( 'Instance ExFAT Volume', function( done ) {
     
     log( inspect( disk ) )
     log( '' )
@@ -46,9 +45,9 @@ suite( 'ExFAT', function() {
     volume = new ExFAT.Volume( partition )
     
     volume.mount( function( error ) {
-      if( error ) console.trace( error.stack )
       log( inspect( volume ) )
       log( '' )
+      done( error )
     })
     
   })
