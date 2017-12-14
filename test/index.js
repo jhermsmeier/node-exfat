@@ -3,6 +3,8 @@ var Disk = require( 'disk' )
 var ExFAT = require( '..' )
 var assert = require( 'assert' )
 var path = require( 'path' )
+var fs = require( 'fs' )
+var zlib = require( 'zlib' )
 
 var log = console.log.bind( console )
 var inspect = function( value ) {
@@ -18,6 +20,18 @@ suite( 'ExFAT', function() {
   var disk = null
   var partition = null
   var volume = null
+  
+  suiteSetup( 'Decompress image', function( next ) {
+    
+    var source = path.join( __dirname, 'data', 'exfat.img.gz' )
+    var destination = path.join( __dirname, 'data', 'exfat.img' )
+    
+    fs.createReadStream( source )
+      .pipe( zlib.createGunzip() )
+      .pipe( fs.createWriteStream( destination ) )
+      .on( 'finish', next )
+    
+  })
   
   suiteSetup( 'Create BlockDevice', function() {
     device = new BlockDevice({
