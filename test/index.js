@@ -2,6 +2,7 @@ var BlockDevice = require( 'blockdevice' )
 var Disk = require( 'disk' )
 var ExFAT = require( '..' )
 var assert = require( 'assert' )
+var path = require( 'path' )
 
 var log = console.log.bind( console )
 var inspect = function( value ) {
@@ -20,7 +21,7 @@ suite( 'ExFAT', function() {
   
   suiteSetup( 'Create BlockDevice', function() {
     device = new BlockDevice({
-      path: __dirname + '/data/usb-thumb-exfat.bin',
+      path: path.join( __dirname, 'data', 'exfat.img' ), // 'usb-thumb-exfat.bin'
       mode: 'r',
       blockSize: 512,
     })
@@ -41,11 +42,11 @@ suite( 'ExFAT', function() {
     log( inspect( disk ) )
     log( '' )
     
-    var part = disk.mbr.partitions[0]
+    var part = disk.gpt.partitions[0]
     
     partition = device.partition({
       firstLBA: part.firstLBA,
-      lastLBA: part.firstLBA + part.sectors
+      lastLBA: part.lastLBA,
     })
     
     volume = new ExFAT.Volume( partition )
