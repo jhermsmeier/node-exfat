@@ -39,10 +39,10 @@ disk.open( function( error ) {
     })
     partitionIndex = disk.gpt.partitions.indexOf( partition )
   } else if( disk.mbr ) {
-    partition = disk.gpt.partitions.find(( partition ) => {
+    partition = disk.mbr.partitions.find(( partition ) => {
       return partition.type === 0x07
     })
-    partitionIndex = disk.gpt.partitions.indexOf( partition )
+    partitionIndex = disk.mbr.partitions.indexOf( partition )
   }
   
   if( partition != null ) {
