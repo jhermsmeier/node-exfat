@@ -38,20 +38,19 @@ disk.open( function( error ) {
       return partition.type.toString() === 'EBD0A0A2-B9E5-4433-87C0-68B6B72699C7'
     })
     partitionIndex = disk.gpt.partitions.indexOf( partition )
-    console.log( '' )
-    console.log( 'Found GPT ExFAT in partition', partitionIndex + 1, '\n' )
-    inspect.log( partition )
   } else if( disk.mbr ) {
     partition = disk.gpt.partitions.find(( partition ) => {
       return partition.type === 0x07
     })
     partitionIndex = disk.gpt.partitions.indexOf( partition )
-    console.log( '' )
-    console.log( 'Found MBR ExFAT in partition', partitionIndex + 1, '\n' )
-    inspect.log( partition )
   }
   
-  if( partition == null ) {
+  if( partition != null ) {
+    console.log( '' )
+    console.log( 'Found GPT ExFAT in partition', partitionIndex + 1, '\n' )
+    inspect.log( partition )
+  } else {
+    console.log( '' )
     console.log( 'No ExFAT partition found' )
     return quit()
   }
