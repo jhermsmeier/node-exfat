@@ -1,6 +1,6 @@
 {
   "name": "exfat",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "ExFAT file system driver",
   "author": "Jonas Hermsmeier <jhermsmeier@gmail.com> (https://jhermsmeier.de)",
   "license": "MIT",
