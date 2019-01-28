@@ -16,14 +16,13 @@
   ],
   "main": "lib/exfat",
   "dependencies": {
-    "bloodline": "^1.0.0",
-    "debug": "^3.1.0"
+    "debug": "^4.1.1"
   },
   "devDependencies": {
-    "blockdevice": "^0.6.0",
+    "blockdevice": "^0.7.0",
     "disk": "^0.7.0",
     "matcha": "^0.7.0",
-    "mocha": "^4.0.1"
+    "mocha": "^5.2.0"
   },
   "homepage": "https://github.com/jhermsmeier/node-exfat",
   "repository": {
