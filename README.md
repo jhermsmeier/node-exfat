@@ -77,6 +77,85 @@ $ npm install --save exfat
 var ExFAT = require( 'exfat' )
 ```
 
+To operate an ExFAT volume, a `device` with the below API is required.
+Position `0` must be the start of the ExFAT partition.
+
+```js
+var device = {
+  read( buffer, offset, length, position, callback ) {}
+  write( buffer, offset, length, position, callback ) {}
+}
+```
+
+Now a volume can be instantiated on the device:
+
+```js
+var volume = new ExFAT.Volume({
+  // Whether the volume is treated as read-only (default: true)
+  readOnly: true,
+  // Device's logical block size (default: device.blockSize || 512 )
+  blockSize: 512,
+  // I/O device API (see above)
+  device: device,
+})
+```
+
+And now the volume can be mounted and subsequently used until unmounted:
+**NOTE:** Error handling omitted for brevity.
+
+```js
+volume.mount(( error ) => {
+  
+  console.log( 'Volume cluster usage', volume.fat.getUsage() )
+  // -> { total: 3932160, used: 266625, bad: 0, free: 3665535 }
+  console.log( 'Volume root cluster chain', volume.fat.getClusterChain( volume.vbr.rootDirCluster ) )
+  // -> [ { number: 7, next: 4294967295 } ]
+  
+  volume.readDirEntries( this.vbr.rootDirCluster, ( error, entries ) => {
+    console.log( 'Volume root directory entries:', entries )
+    // -> [
+    //   Label { type: 131, length: 7, value: 'WD Blue' },
+    //   Bitmap {
+    //     type: 129,
+    //     unknown1: <Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00>,
+    //     cluster: 2,
+    //     size: 476723n
+    //   },
+    //   UpCase {
+    //     type: 130,
+    //     reserved1: <Buffer 00 00 00>,
+    //     checksum: 3860452109,
+    //     reserved2: <Buffer 00 00 00 00 00 00 00 00 00 00 00 00>,
+    //     cluster: 6,
+    //     size: 5836n
+    //   },
+    //   File {
+    //     type: 133,
+    //     continuations: 2,
+    //     checksum: 63169,
+    //     attr: 50,
+    //     unknown1: 0,
+    //     crtime: 21126,
+    //     crdate: 20245,
+    //     mtime: 21126,
+    //     mdate: 20245,
+    //     atime: 21126,
+    //     adate: 20245,
+    //     crtimeCs: 169,
+    //     mtimeCs: 169,
+    //     unknown2: <Buffer f8 f8 f8 00 00 00 00 00 00 00>
+    //   },
+    //   ...
+    // ]
+  })
+  
+  volume.unmount(( error ) => {
+    // ...
+  })
+  
+})
+```
+
 ## Examples
 
 ### Inspecting Real Storage Devices
