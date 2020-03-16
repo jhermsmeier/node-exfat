@@ -98,8 +98,8 @@ device.open(( error ) => {
   volume.mount( function( error ) {
     
     console.log( 'Volume.mount()', error || volume )
-    console.log( 'Volume cluster usage', volume.table.getUsage() )
-    console.log( 'Volume root cluster chain', volume.table.getClusterChain( volume.vbr.rootDirCluster ) )
+    console.log( 'Volume cluster usage', volume.fat.getUsage() )
+    console.log( 'Volume root cluster chain', volume.fat.getClusterChain( volume.vbr.rootDirCluster ) )
     
     volume.readDirEntries( volume.vbr.rootDirCluster, ( error, entries ) => {
       console.log( 'Volume.readDirEntries()', error || entries )
