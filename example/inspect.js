@@ -1,78 +1,113 @@
+var fs = require( 'fs' )
+var path = require( 'path' )
+var MBR = require( 'mbr' )
+var GPT = require( 'gpt' )
 var ExFAT = require( '..' )
-var BlockDevice = require( 'blockdevice' )
-var Disk = require( 'disk' )
 var inspect = require( '../test/inspect' )
-var argv = process.argv.slice(2)
 
-var devicePath = argv.shift()
-var device = new BlockDevice({
-  path: devicePath,
-  mode: 'r',
-  blockSize: 512,
-})
+var argv = process.argv.slice( 2 )
+var filename = argv.shift() || path.join( __dirname, '..', 'test', 'data', 'exfat.img' )
 
-var disk = new Disk( device )
-
-function quit() {
-  disk.close( function( error ) {
-    if( error ) {
-      return console.error( error )
-    }
-  })
+if( !filename ) {
+  console.error( 'Usage: node example/inspect.js <filename>' )
+  process.exit( 1 )
 }
 
-disk.open( function( error ) {
+var device = {
+  fd: null,
+  start: 0,
+  end: Infinity,
+  blockSize: 512,
+  open( callback ) {
+    fs.open( filename, 'r', ( error, fd ) => {
+      device.fd = fd
+      callback( error )
+    })
+  },
+  close( callback ) {
+    fs.close( device.fd, callback )
+  },
+  read( buffer, offset, length, position, callback ) {
+    position = device.start + position
+    fs.read( device.fd, buffer, offset, length, position, callback )
+  },
+  write( buffer, offset, length, position, callback ) {
+    position = device.start + position
+    fs.write( device.fd, buffer, offset, length, position, callback )
+  },
+  readMBR() {
+    var buffer = Buffer.alloc( 512 )
+    fs.readSync( device.fd, buffer, 0, buffer.length, 0 )
+    var mbr = MBR.parse( buffer )
+    return mbr
+  },
+  readGPT( mbr ) {
+    
+    mbr = mbr || device.readMBR()
+    var efiPart = mbr.getEFIPart()
+    if( !efiPart ) return null
+    
+    var position = efiPart.firstLBA * device.blockSize
+    var length = 64 * 1024
+    var offset = 0
+    var gpt = new GPT()
+    var buffer = Buffer.alloc( length )
+    
+    fs.readSync( device.fd, buffer, offset, length, position )
+    gpt.parse( buffer )
+    
+    return gpt
+    
+  }
+}
+
+var volume = new ExFAT.Volume({
+  readOnly: true,
+  device: device,
+})
+
+console.log( inspect( volume ) )
+
+device.open(( error ) => {
   
-  if( error ) {
-    console.error( error )
-    return quit()
+  if( error ) throw error;
+  
+  var mbr = device.readMBR()
+  var gpt = device.readGPT()
+  var exfatPart = null
+  
+  if( gpt ) {
+    console.log( inspect( gpt ) )
+    exfatPart = gpt.partitions.find(( partition ) => {
+      return partition.type === 'EBD0A0A2-B9E5-4433-87C0-68B6B72699C7'
+    })
   }
   
-  inspect.log(disk)
-  
-  var partition = null
-  var partitionIndex = -1
-  
-  if( disk.gpt ) {
-    partition = disk.gpt.partitions.find(( partition ) => {
-      return partition.type.toString() === 'EBD0A0A2-B9E5-4433-87C0-68B6B72699C7'
-    })
-    partitionIndex = disk.gpt.partitions.indexOf( partition )
-  } else if( disk.mbr ) {
-    partition = disk.mbr.partitions.find(( partition ) => {
+  if( !exfatPart && mbr ) {
+    console.log( inspect( mbr ) )
+    exfatPart = mbr.partitions.find(( partition ) => {
       return partition.type === 0x07
     })
-    partitionIndex = disk.mbr.partitions.indexOf( partition )
   }
   
-  if( partition != null ) {
-    console.log( '' )
-    console.log( 'Found GPT ExFAT in partition', partitionIndex + 1, '\n' )
-    inspect.log( partition )
-  } else {
-    console.log( '' )
-    console.log( 'No ExFAT partition found' )
-    return quit()
+  if( exfatPart ) {
+    device.start = exfatPart.firstLBA * device.blockSize
+    device.end = exfatPart.lastLBA * device.blockSize
   }
-  
-  var volume = new ExFAT.Volume( disk.partitions[ partitionIndex ] )
   
   volume.mount( function( error ) {
     
-    if( error ) {
-      console.error( error )
-      return quit()
-    }
+    console.log( 'Volume.mount()', error || volume )
+    console.log( 'Volume cluster usage', volume.table.getUsage() )
+    console.log( 'Volume root cluster chain', volume.table.getClusterChain( volume.vbr.rootDirCluster ) )
     
-    console.log( '' )
-    console.log( 'Sector size', volume.sectorSize )
-    console.log( 'Sectors per cluster', volume.sectorsPerCluster )
-    console.log( 'Cluster size', volume.clusterSize )
-    console.log( '' )
-    
-    inspect.log( volume )
-    
-    quit()
+    volume.readDirEntries( volume.vbr.rootDirCluster, ( error, entries ) => {
+      console.log( 'Volume.readDirEntries()', error || entries )
+      volume.readBitmap( this.vbr.rootDirCluster, ( error, table ) => {
+        console.log( error || table )
+        device.close(( error ) => {})
+      })
+    })
     
   })
   
