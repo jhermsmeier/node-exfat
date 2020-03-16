@@ -14,15 +14,18 @@
     "volume",
     "mount"
   ],
-  "main": "lib/exfat",
-  "dependencies": {
-    "debug": "^4.1.1"
+  "main": "lib/exfat.js",
+  "browser": {
+    "lib/exfat.js": "browser/exfat.js",
+    "lib/exfat.min.js": "browser/exfat.min.js"
   },
+  "dependencies": {},
   "devDependencies": {
-    "blockdevice": "^0.7.0",
-    "disk": "^0.7.0",
-    "matcha": "^0.7.0",
-    "mocha": "^5.2.0"
+    "browserify": "^16.5.0",
+    "gpt": "^2.0.2",
+    "mbr": "^1.1.3",
+    "mocha": "^5.2.0",
+    "terser": "^4.6.6"
   },
   "homepage": "https://github.com/jhermsmeier/node-exfat",
   "repository": {
@@ -32,11 +35,12 @@
   "bugs": {
     "url": "https://github.com/jhermsmeier/node-exfat/issues"
   },
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "bench": "matcha",
-    "test": "mocha --ui tdd"
+    "browserify": "browserify --standalone ExFAT --entry lib/exfat.js --outfile browser/exfat.js",
+    "minify": "terser browser/exfat.js --output browser/exfat.min.js",
+    "test": "mocha"
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }
