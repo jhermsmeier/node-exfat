@@ -1,3 +1,4 @@
+var { context, test, before } = require( '@jhermsmeier/control' )
 var assert = require( 'assert' )
 var path = require( 'path' )
 var fs = require( 'fs' )
@@ -6,7 +7,7 @@ var zlib = require( 'zlib' )
 var ExFAT = require( '..' )
 var inspect = require( './inspect' )
 
-describe( 'ExFAT', function() {
+context( 'ExFAT', function() {
   
   before( 'Decompress image', function( done ) {
     

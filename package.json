@@ -21,10 +21,10 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@jhermsmeier/control": "^1.0.0",
     "browserify": "^16.5.0",
     "gpt": "^2.0.2",
     "mbr": "^1.1.3",
-    "mocha": "^5.2.0",
     "terser": "^4.6.6"
   },
   "homepage": "https://github.com/jhermsmeier/node-exfat",
@@ -38,7 +38,7 @@
   "scripts": {
     "browserify": "browserify --standalone ExFAT --entry lib/exfat.js --outfile browser/exfat.js",
     "minify": "terser browser/exfat.js --output browser/exfat.min.js",
-    "test": "mocha"
+    "test": "control test"
   },
   "engines": {
     "node": ">=10.0.0"
